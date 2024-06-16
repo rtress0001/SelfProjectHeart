@@ -1,0 +1,318 @@
+---
+title: "Heart Rate Prediction"
+output: html_document
+date: "2024-05-31"
+---
+
+Ask Phase
+
+Find the combination variables with 70% or more likelhood of having a high chance?
+
+Find the statitic with the highest affect on likelhood chance. 
+
+
+You will produce a report with the following deliverers: 
+
+
+1. A clear summary of the business task.
+
+2.A description of all data sources used. 
+
+4. A summary of your analysis 
+
+5. Supporting visualizations and key findings 
+
+6. Your top high-level content recommendations based on your analysis Use the following 
+
+
+Ask phase Questions.
+
+What is the problem you are trying to solve? 
+
+We want to know the symptoms that result in the having a higher than likely chance of having a heart attack.  
+
+How can your insights drive business decisions?  
+
+Medical professionals could benefit by recommending to patients medical intervention when the measurable statistics. 
+
+
+Prepare phase questions.
+
+Where is your data stored? 
+
+2 csv files. one wide format style listening the health statistics available. 
+
+How is the data organized?
+
+The data is divided into wide format on daily Activity where each row has lots of different types of informational columns
+
+Are there issues with bias or credibility in this data? 
+
+The data is sufficently large not to introduce bais if the sampling method which is unknown isn't bais. we have to take that on faith since we dont have where it came from listen in the meta data.
+
+
+Does your data ROCCC? 
+
+We dont know about the reiablity of the data since its not labeld where it came from, we dont know if comes from an orginal source, the data set is not cited, but it current since health statitics are not likely to be out of date.  
+
+How are you addressing licensing, privacy, security, and accessibility?
+
+its cited and public domain data. So the data Roccc. The security of the data is a non issue due it containing no personal information that can be used against the clients thanks to its “depersonalized id system”
+
+How did you verify the data’s integrity?  
+
+CURRENT LOCATION
+
+How does it help you answer your question? 
+
+The data to improve our sales metrics is directly represented in the data.  
+
+The daily activities of these individuals can determine how frequently do our clients use the devices to track 
+
+Their health in order to find out how best to advertise to our clients.
+
+Are there any problems with the data?
+
+The first problem is the stakeholder believes that there are limitations in the data, so we might need to acquire more data to analyze. 
+
+Process 
+
+What tools are you choosing and why? 
+
+I plan on using r due to the large natures of the files in question. 
+
+What steps have you taken to ensure that your data is clean?
+
+Action three: determine the rows is the same with numeric values? 
+
+Yes, All data columns have the same number of columns with numeric values in it.
+
+Action four: inspect each column for null values using filters. 
+
+The data set contains no null values in it. 
+
+Action five: What is the struture of the data?
+
+The data set contains only numeric values. 
+
+
+● How can you verify that your data is clean and ready to analyze?
+
+● Have you documented your cleaning process so you can review and share those results? 
+
+Key tasks 
+
+1. Check the data for errors. 
+
+2. Choose your tools. We Choose R
+
+3. Transform the data so you can work with it effectively. 
+
+4. Document the cleaning process. Completed my check 
+
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+
+install.packages("skimr")
+library(skimr)
+```
+
+```{r}
+data <- read.csv('heart.csv')
+
+view(data)
+```
+
+This is the start of the key task to check the data for errors.
+```{r}
+skim_without_charts(data)
+```
+As you can observe the number of n_missing data is zero suggesting all the columns where previously clean for us. 
+```{r}
+glimpse(data)
+
+```
+All the columns have a constant name format therefore do not need to be cleaned. Every column is consitant in under case and there are no spaces between them removing unnecessary underscores. 
+
+Cleaning the data to confirm that all the columns contain numeric values this step proved to be unnecessary, but it was a fun implementation of code
+
+This shows that all the data contains numeric values and not null values suggesting the nulls have been removed from the data prior to our aquiring from kaggle.
+
+checking if all the data contain all the same number of numeric values in each row.
+
+That completes the cleaning process for checking data types, errors and missing or null values.
+
+Now lets inspect the data for outliers we need to use a box and wisker plot using the ggplot methodologies.
+
+
+```{r}
+install.packages("ggplot2")  # Install ggplot2 if you haven't already
+library(ggplot2)             # Load the ggplot2 package
+```
+
+```{r}
+data <- read.csv('heart.csv')
+
+plot_boxplot <- function(data, Total.Revenue) {
+  ggplot(data, aes(y = Total.Revenue)) +
+    geom_boxplot() +
+    labs(title = paste("Box Plot of", Total.Revenue),
+         y = Total.Revenue) +
+    theme_minimal()
+}
+plot_boxplot(data, "Total.Revenue")
+
+```
+
+
+```{r}
+col_names <- names(data)
+print(col_names)
+```
+
+```{r}
+col_names <- names(data)
+
+plot_boxplot <- function(data, column_name) {
+  ggplot(data, aes_string(y = column_name)) +
+    geom_boxplot() +
+    labs(title = paste("Box Plot of", column_name),
+         y = column_name) +
+    theme_minimal()
+}
+
+# Get column names
+col_names <- names(data)
+
+# Loop through column names and create box plots
+for (ele in col_names) {
+  # Create a box plot for each column
+  print(plot_boxplot(data, ele))
+}
+```
+
+The box plots show many outlines, but they are still in the realm of possible answers for a living person. We can throw out the idea the data contains errors of the having to large of a number variety that would throw off our calculations in our analysis. 
+
+Point of Analysis stoped for this sunday
+
+
+We also confirm that the string based data set has no errors in it due to the only having several complete categories. 
+
+That concludes our cleaning process we checked for errors, nulls, and extra large numbers that might throw off our calculations. 
+
+Analyze
+
+1. Analyze sales trends over time to identify seasonal patterns or growth opportunities.
+
+```{r}
+head(data)
+data <- data %>% mutate(Date = as.Date(Date, "%Y-%m-%d"))
+```
+
+```{r}
+data <- data %>% mutate(Date = as.Date(Date, "%Y-%m-%d"))
+ggplot(data, aes(x = Date, y = Units.Sold)) +
+  geom_line() +
+  labs(title = "Total Revenue of Sales Over Time by Product Category",
+       x = "Date",
+       y = "Total Revenue")
+
+```
+
+```{r}
+data <- data %>% mutate(Date = as.Date(Date, "%Y-%m-%d"))
+ggplot(data, aes(x = Date, y = Total.Revenue, color = Product.Category)) +
+  geom_line() +
+  labs(title = "Total Revenue of Sales Over Time by Product Category",
+       x = "Date",
+       y = "Total Revenue",
+       color = "Product Category")
+
+```
+Clothing seems to have spikes around the change of seasons
+Home Appliances are purchased mostly in winter months
+Books have little seasonality
+
+2. Explore the popularity of different product categories across regions.
+3. Investigate the impact of payment methods on sales volume or revenue.
+4. Identify top-selling products within each category to optimize inventory and marketing strategies.
+5. Evaluate the performance of specific products or categories in different regions to tailor marketing
+
+Study Roadmap as a guide:
+
+
+Guiding questions
+● How should you organize your data to perform analysis on it? 
+
+
+● Has your data been properly formatted?
+
+The data is organized perfectly for this type of analysis filtering by person then glimpsing, then visualizing trends to spot the patterns is a valid approach for how the data is formatted. 
+
+
+
+
+
+old analysis.
+
+
+● How will these insights help answer your business questions?
+
+Our goal is discover how our devices influence the behavior in our clients there is a general trend upward on many of the variables and a decrease of the negative variables like sedentary minutes and calories. Showing that having these devices helps you develop heather habits accoss the broad.
+
+1. Aggregate your data so it’s useful and accessible.combined the two data sets into one useing the "rbind" Done earlier in the document. 
+
+2. Organize and format your data. 
+organized the data by filtering by indiviudals to preform time series analysis on each indivudals habits.  
+
+3. Perform calculations. Done
+
+4. Identify trends and relationships. The relationship with time and the habits of the individuals show a strong relationship over time using the devices increase healthier habits and decrease negative habits. 
+
+A summary of your analysis:
+
+At first I was very interested in the functionality of the column loggedActiviesDistance to determine how much logging the information the group preformed showing people are not interested in increasing the number of activities they had to do. 
+
+I wanted to isolate for individuals to determine the changes from the average, but ran into difficulties of the skim without chart function out outputting 38 averages. 
+
+Moving on I decided to look at the relationships of the individuals total steps and found a trend among the uses that match the groups trend to confirm that there is a increase in total steps, total distance, very active minutes, and matching decreases in calories and sedentary minutes. This is our advertising goal to show that our users life's are improving overtime with the uses of the devices.  
+
+
+Share
+
+Once you have completed your analysis, create your data visualizations. The visualizations should clearly communicate your
+
+high-level insights and recommendations. Use the following Case Study Roadmap as a guide:
+Case Study Roadmap - Share
+
+Guiding questions
+
+● Were you able to answer the business questions? 
+
+The goal of the marketing team was to show how these devices are affecting our clients to reach out to future clients to increase our market share of our product.
+
+● What story does your data tell?
+
+The data shows strong trends across multiple measurements that are measuring different aspects of the life of client showing that the devices information helps people adjust their habits over time to live better life's. 
+
+● How do your findings relate to your original question?
+
+Its a clear advertising total of buy our devices and live a better life. 
+
+● Who is your audience? What is the best way to communicate with them?
+
+The audience is future clients who are unsure the investment in our devices will improve there life. 
+
+● Can data visualization help you share your findings?
+
+The visualizations are what proved the patter that I was looking up until making them, I was unable to spot the strong relationships between the individuals trends and the groups trends are similar in the time series habits of the individuals and group showing increasing the good health habits and decrease of groups. 
+
+● Is your presentation accessible to your audience?
+
+The presentation is for Sršen who want to find out how individuals life's are being altered by the devices to market to future clients. 
+
+
+
