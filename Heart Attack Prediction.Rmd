@@ -156,14 +156,6 @@ library(ggplot2)             # Load the ggplot2 package
 ```{r}
 data <- read.csv('heart.csv')
 
-plot_boxplot <- function(data, Total.Revenue) {
-  ggplot(data, aes(y = Total.Revenue)) +
-    geom_boxplot() +
-    labs(title = paste("Box Plot of", Total.Revenue),
-         y = Total.Revenue) +
-    theme_minimal()
-}
-plot_boxplot(data, "Total.Revenue")
 
 ```
 
@@ -196,52 +188,80 @@ for (ele in col_names) {
 
 The box plots show many outlines, but they are still in the realm of possible answers for a living person. We can throw out the idea the data contains errors of the having to large of a number variety that would throw off our calculations in our analysis. 
 
-Point of Analysis stoped for this sunday
 
+Find the combination variables with 70% or more likelhood of having a high chance?
 
-We also confirm that the string based data set has no errors in it due to the only having several complete categories. 
-
-That concludes our cleaning process we checked for errors, nulls, and extra large numbers that might throw off our calculations. 
-
-Analyze
-
-1. Analyze sales trends over time to identify seasonal patterns or growth opportunities.
+ "age"      "sex"      "cp"       "trtbps"   "chol"     "fbs"      "restecg"  "thalachh" "exng"    
+"oldpeak"  "slp"      "caa"      "thall"    "output"  
 
 ```{r}
-head(data)
-data <- data %>% mutate(Date = as.Date(Date, "%Y-%m-%d"))
+install.packages("dplyr")
+library(dplyr)
+
+```
+```{r}
+num_true <- data %>%
+  filter(chol > 250) %>%
+  summarize(count = sum(output))
+
+fitler_length <- data %>%
+  filter(chol > 250) %>%
+  nrow()
+
+print(num_true/fitler_length)
+
 ```
 
 ```{r}
-data <- data %>% mutate(Date = as.Date(Date, "%Y-%m-%d"))
-ggplot(data, aes(x = Date, y = Units.Sold)) +
-  geom_line() +
-  labs(title = "Total Revenue of Sales Over Time by Product Category",
-       x = "Date",
-       y = "Total Revenue")
+num_true <- data %>%
+  filter(chol > 250 & age > 45 & restecg > 0) %>%
+  summarize(count = sum(output))
+
+fitler_length <- data %>%
+  filter(chol > 250 & age > 45 & restecg > 0) %>%
+  nrow()
+
+print(num_true/fitler_length)
 
 ```
 
 ```{r}
-data <- data %>% mutate(Date = as.Date(Date, "%Y-%m-%d"))
-ggplot(data, aes(x = Date, y = Total.Revenue, color = Product.Category)) +
-  geom_line() +
-  labs(title = "Total Revenue of Sales Over Time by Product Category",
-       x = "Date",
-       y = "Total Revenue",
-       color = "Product Category")
+num_true <- data %>%
+  filter(chol > 250 & age > 45 & ) %>%
+  summarize(count = sum(output))
+
+fitler_length <- data %>%
+  filter(chol > 250 & age > 45 & ) %>%
+  nrow()
+
+print(num_true/fitler_length)
 
 ```
-Clothing seems to have spikes around the change of seasons
-Home Appliances are purchased mostly in winter months
-Books have little seasonality
 
-2. Explore the popularity of different product categories across regions.
-3. Investigate the impact of payment methods on sales volume or revenue.
-4. Identify top-selling products within each category to optimize inventory and marketing strategies.
-5. Evaluate the performance of specific products or categories in different regions to tailor marketing
+keep guessing untill, I discover a pattern
+```{r}
+num_true <- data %>%
+  filter(chol > 250 & age > 45 & restecg > 0 & trtbps > 150) %>%
+  summarize(count = sum(output))
 
-Study Roadmap as a guide:
+fitler_length <- data %>%
+  filter(chol > 250 & age > 45 & restecg > 0 & trtbps > 150) %>%
+  nrow()
+
+print(num_true/fitler_length)
+
+```
+```{r}
+heart_attack_data <- data[data$output == TRUE, ]
+
+hist(heart_attack_data$trtbps, breaks = 10, col = "skyblue", border = "white",
+     main = "Distribution of Blood Pressure (trtbps) for Heart Attack Patients",
+     xlab = "Resting Blood Pressure (mm Hg)",
+     ylab = "Frequency")
+Find the statitic with the highest affect on likelhood chance. 
+
+```
+analysis stopped here for the week.
 
 
 Guiding questions
