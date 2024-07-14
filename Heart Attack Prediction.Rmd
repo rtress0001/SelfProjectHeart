@@ -116,6 +116,14 @@ library(tidyverse)
 library(ggplot2)
 library(dplyr)
 
+install.packages("ggplot2")
+install.packages("reshape2")
+install.packages("corrplot")
+
+library(ggplot2)
+library(reshape2)
+library(corrplot)
+
 install.packages("skimr")
 library(skimr)
 ```
@@ -188,6 +196,36 @@ for (ele in col_names) {
 
 The box plots show many outlines, but they are still in the realm of possible answers for a living person. We can throw out the idea the data contains errors of the having to large of a number variety that would throw off our calculations in our analysis. 
 
+To prepare for the data set, I must find out what is the meaning for each column
+
+Age is how old the person is.
+
+sex is the gender of the person
+
+cp is categorical data that as been label encoded. Chest pain type ~ 0 = Typical Angina, 1 = Atypical Angina, 2 = Non-anginal Pain, 3 = Asymptomatic.
+
+trtpbs - Resting Blood pressing in mm
+
+chol - Cholestoral in mg/dl fetched via BMI sensor
+
+fbs is a boolean variable represented by (fasting blood sugar > 120 mg/dl) ~ 1 = True, 0 = False
+
+restecg - Resting electrocardiographic results ~ 0 = Normal, 1 = ST-T wave normality, 2 = Left ventricular hypertrophy
+
+thalachh - Maximum heart rate achieved
+
+oldpeak - Previous peak
+
+slp - Slope
+
+caa - Number of major vessels
+
+thall - Thalium Stress Test result ~ (0,3)
+
+exng - Exercise induced angina ~ 1 = Yes, 0 = No
+
+output - Target variable
+
 
 Find the combination variables with 70% or more likelhood of having a high chance?
 
@@ -238,7 +276,7 @@ print(num_true/fitler_length)
 
 ```
 
-keep guessing untill, I discover a pattern
+keep guessing until, I discover a pattern
 ```{r}
 num_true <- data %>%
   filter(chol > 250 & age > 45 & restecg > 0 & trtbps > 150) %>%
@@ -261,78 +299,60 @@ hist(heart_attack_data$trtbps, breaks = 10, col = "skyblue", border = "white",
 Find the statitic with the highest affect on likelhood chance. 
 
 ```
-analysis stopped here for the week.
+Creating a correlcaiton heat map into find the strongest relationship between varaiables. 
 
+```{r}
+correlation_matrix <- cor(data)
 
-Guiding questions
-● How should you organize your data to perform analysis on it? 
+corrplot(correlation_matrix)
+```
 
+Cp has the greatest postive correlation, where old peak has the greatest negative correlation
 
-● Has your data been properly formatted?
+```{r}
+num_true <- data %>%
+  filter(cp == 1, oldpeak < 2) %>%
+  summarize(count = sum(output))
 
-The data is organized perfectly for this type of analysis filtering by person then glimpsing, then visualizing trends to spot the patterns is a valid approach for how the data is formatted. 
+fitler_length <- data %>%
+  filter(cp == 1, oldpeak < 2) %>%
+  nrow()
 
+print(num_true/fitler_length)
 
+```
+Having chest pain of 1 and old peak less than 2 results in the number of people with a likelyhood of having a heart atttack above 70% meaning we should take preventive action for these individuals. 
 
+```{r}
+target_correlations <- correlation_matrix["output", ]
 
+# Convert to absolute values
+abs_target_correlations <- abs(target_correlations)
 
-old analysis.
+print(abs_target_correlations)
+```
+exng is the variable with the greatest correlation to the target variable, but thalachh and cp and old peak are also very strong variables to use in predicting heart attacks. 
+
 
 
 ● How will these insights help answer your business questions?
 
-Our goal is discover how our devices influence the behavior in our clients there is a general trend upward on many of the variables and a decrease of the negative variables like sedentary minutes and calories. Showing that having these devices helps you develop heather habits accoss the broad.
+The goal is to determine actionable health statistics for a person likely to experience a heart attack. With these insights gained from the data analysis we can help medical professionals decision making for heart attack. 
 
-1. Aggregate your data so it’s useful and accessible.combined the two data sets into one useing the "rbind" Done earlier in the document. 
-
-2. Organize and format your data. 
-organized the data by filtering by indiviudals to preform time series analysis on each indivudals habits.  
-
-3. Perform calculations. Done
-
-4. Identify trends and relationships. The relationship with time and the habits of the individuals show a strong relationship over time using the devices increase healthier habits and decrease negative habits. 
 
 A summary of your analysis:
 
-At first I was very interested in the functionality of the column loggedActiviesDistance to determine how much logging the information the group preformed showing people are not interested in increasing the number of activities they had to do. 
-
-I wanted to isolate for individuals to determine the changes from the average, but ran into difficulties of the skim without chart function out outputting 38 averages. 
-
-Moving on I decided to look at the relationships of the individuals total steps and found a trend among the uses that match the groups trend to confirm that there is a increase in total steps, total distance, very active minutes, and matching decreases in calories and sedentary minutes. This is our advertising goal to show that our users life's are improving overtime with the uses of the devices.  
-
-
-Share
-
-Once you have completed your analysis, create your data visualizations. The visualizations should clearly communicate your
-
-high-level insights and recommendations. Use the following Case Study Roadmap as a guide:
-Case Study Roadmap - Share
-
-Guiding questions
+The two business tasks was to find a set of conditions that had a likelihood greater than 70% and a filtered data set I found old peak less than 2 and chest pain equal to one to have a 82.5% percent chance of having a heart attack. Then I discovered the great correlations to the outcome of having a heart attack is exng is the variable with the greatest correlation to the target variable, but thalachh and cp and old peak are also very strong variables to use in predicting heart attacks. 
 
 ● Were you able to answer the business questions? 
 
-The goal of the marketing team was to show how these devices are affecting our clients to reach out to future clients to increase our market share of our product.
+Yes the data set contained all the information to analyze the data to solve the business task. 
+
 
 ● What story does your data tell?
 
-The data shows strong trends across multiple measurements that are measuring different aspects of the life of client showing that the devices information helps people adjust their habits over time to live better life's. 
+The probability of experience a heart attack is found within the data by filtering the data to discover high likelihood of experience a heart attack.  
 
-● How do your findings relate to your original question?
-
-Its a clear advertising total of buy our devices and live a better life. 
-
-● Who is your audience? What is the best way to communicate with them?
-
-The audience is future clients who are unsure the investment in our devices will improve there life. 
-
-● Can data visualization help you share your findings?
-
-The visualizations are what proved the patter that I was looking up until making them, I was unable to spot the strong relationships between the individuals trends and the groups trends are similar in the time series habits of the individuals and group showing increasing the good health habits and decrease of groups. 
-
-● Is your presentation accessible to your audience?
-
-The presentation is for Sršen who want to find out how individuals life's are being altered by the devices to market to future clients. 
 
 
 
